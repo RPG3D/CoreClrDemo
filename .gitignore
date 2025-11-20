@@ -44,4 +44,7 @@
 **/x64/Debug/**
 **/x64/Release/**
 
-/ClrDemo/ClassLibrary/obj/**
+**/.vs/**
+
+/ManagedDemo/bin/**
+/ManagedDemo/obj/**
