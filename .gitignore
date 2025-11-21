@@ -45,6 +45,8 @@
 **/x64/Release/**
 
 **/.vs/**
+**/.xmake/**
+**/.vscode/**
 
 /ManagedDemo/bin/**
 /ManagedDemo/obj/**

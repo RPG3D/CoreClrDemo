@@ -13,18 +13,6 @@
 #include "mono/metadata/image.h"
 
 
-#pragma comment(lib, "coreclr.import.lib")
-#pragma comment(lib, "mono-component-debugger-static.lib")
-#pragma comment(lib, "mono-component-debugger-stub-static.lib")
-#pragma comment(lib, "mono-component-diagnostics_tracing-static.lib")
-#pragma comment(lib, "mono-component-diagnostics_tracing-stub-static.lib")
-#pragma comment(lib, "mono-component-hot_reload-static.lib")
-#pragma comment(lib, "mono-component-hot_reload-stub-static.lib")
-#pragma comment(lib, "mono-component-marshal-ilgen-static.lib")
-#pragma comment(lib, "mono-component-marshal-ilgen-stub-static.lib")
-#pragma comment(lib, "mono-profiler-aot.lib")
-#pragma comment(lib, "monosgen-2.0.lib")
-
 /*
 
 copy mono sdk at E:\Code\MonoSDK
