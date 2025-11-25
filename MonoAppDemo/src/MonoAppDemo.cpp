@@ -13,21 +13,13 @@
 #include "mono/metadata/image.h"
 
 
-/*
-
-copy mono sdk at E:\Code\MonoSDK
-
-E:\Code\MonoSDK\runtime, place managed dlls here
-E:\Code\MonoSDK\include, place mono headers here
-E:\Code\MonoSDK\lib, place mono libs here
-
-*/
+typedef int (*AddFunction)(int, int);
 
 int main()
 {
-    std::cout << "Hello Mono App!\n";
+    std::cout << "Hello Mono App(native)!\n";
 
-	mono_set_dirs("E:/Code/MonoSDK/runtime", "");
+	mono_set_dirs("D:/Code/MonoSDK/runtime", "");
 
 	MonoDomain* domain = mono_jit_init("MyMonoApp");
 
@@ -38,9 +30,17 @@ int main()
 	MonoImage* image = mono_assembly_get_image(assembly);
 	
 	MonoClass* ManagedClass = mono_class_from_name(image, "ManagedDemo", "ManagedClass");
-	MonoMethod* ManagedMethod = mono_class_get_method_from_name(ManagedClass, "PrintMessage", 0);
+	MonoMethod* MsgMethod = mono_class_get_method_from_name(ManagedClass, "PrintMessage", 0);
+	mono_runtime_invoke(MsgMethod, nullptr, nullptr, nullptr);
 
-	mono_runtime_invoke(ManagedMethod, nullptr, nullptr, nullptr);
+
+	MonoMethod* addMethod = mono_class_get_method_from_name(ManagedClass, "Add", 2);
+
+	AddFunction addFunc = (AddFunction)mono_method_get_unmanaged_thunk(addMethod);
+
+	// Now you can call it like a regular function pointer
+	int result = addFunc(5, 7); 
+	std::cout << "Result of Add(5, 7): " << result << std::endl;
 
 	mono_jit_cleanup(domain);
 
