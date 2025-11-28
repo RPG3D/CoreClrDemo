@@ -15,6 +15,11 @@
 
 typedef int (*AddFunction)(int, int);
 
+int Add(int a, int b)
+{
+	return a + b;
+}
+
 int main()
 {
     std::cout << "Hello Mono App(native)!\n";
@@ -30,17 +35,39 @@ int main()
 	MonoImage* image = mono_assembly_get_image(assembly);
 	
 	MonoClass* ManagedClass = mono_class_from_name(image, "ManagedDemo", "ManagedClass");
-	MonoMethod* MsgMethod = mono_class_get_method_from_name(ManagedClass, "PrintMessage", 0);
-	mono_runtime_invoke(MsgMethod, nullptr, nullptr, nullptr);
+
+	{
+		MonoMethod* MsgMethod = mono_class_get_method_from_name(ManagedClass, "PrintMessage", 0);
+		mono_runtime_invoke(MsgMethod, nullptr, nullptr, nullptr);
+
+	}
+
+	{
+		MonoMethod* addMethod = mono_class_get_method_from_name(ManagedClass, "Add", 2);
+		AddFunction addFunc = (AddFunction)mono_method_get_unmanaged_thunk(addMethod);
+		int result = addFunc(5, 7); 
+		std::cout << "Result of Add(5, 7): " << result << std::endl;	
+	}
+
+	{
+		MonoMethod* method = mono_class_get_method_from_name(ManagedClass, "RegisterFunctionPtr", 1);
+		void* args[1];
+		args[0] = (void*)(&Add);
+		mono_runtime_invoke(method, nullptr, args, nullptr);
 
 
-	MonoMethod* addMethod = mono_class_get_method_from_name(ManagedClass, "Add", 2);
-
-	AddFunction addFunc = (AddFunction)mono_method_get_unmanaged_thunk(addMethod);
-
-	// Now you can call it like a regular function pointer
-	int result = addFunc(5, 7); 
-	std::cout << "Result of Add(5, 7): " << result << std::endl;
+		// MonoMethod* method2 = mono_class_get_method_from_name(ManagedClass, "CallNativeAdd", 2);
+		// void* args2[2];
+        // int a = 15, b = 25;
+        // args2[0] = &a;
+        // args2[1] = &b;
+        // MonoObject* exception = nullptr;
+        // MonoObject* result = mono_runtime_invoke(method, nullptr, args2, &exception); 
+        // if (!exception && result) {
+        //     int addResult = *(int*)mono_object_unbox(result);
+        //     printf("Managed call to native Add: %d + %d = %d\n", a, b, addResult);
+        // }
+	}
 
 	mono_jit_cleanup(domain);
 
@@ -49,13 +76,3 @@ int main()
 
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
