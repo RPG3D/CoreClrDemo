@@ -50,3 +50,5 @@
 
 /ManagedDemo/bin/**
 /ManagedDemo/obj/**
+/MonoAppDemo/build/**
+/MonoAppDemo/MonoAppDemo.xcodeproj/**

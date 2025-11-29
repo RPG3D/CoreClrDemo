@@ -19,7 +19,11 @@ target("MonoDemo")
     add_includedirs(MonoSDK .. "/include")
     add_linkdirs(MonoSDK .. "/lib")
 
-    add_links("coreclr.import")
+    if is_plat("windows") then
+        add_links("coreclr.import")
+    elseif is_plat("macosx") then
+        add_links("coreclr")
+        add_rpathdirs("./")
+    end
 
-    add_rpathdirs("./")
     
