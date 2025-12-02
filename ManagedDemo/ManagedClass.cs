@@ -1,7 +1,14 @@
-﻿namespace ManagedDemo
+﻿
+using System.Runtime.InteropServices;
+namespace ManagedDemo
 {
     public unsafe class ManagedClass
     {
+
+        static ManagedClass()
+        {
+            System.Console.WriteLine("Managed: static ManagedClass()");       
+        }
 
         public static void PrintMessage(string InMsg)
         {
