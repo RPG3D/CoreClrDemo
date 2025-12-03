@@ -48,6 +48,7 @@
 **/.xmake/**
 **/.vscode/**
 
+**/vs2022/**
 /ManagedDemo/bin/**
 /ManagedDemo/obj/**
 /MonoAppDemo/build/**

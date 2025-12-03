@@ -1,6 +1,11 @@
 
 
-local DotNETDir = "/usr/local/share/dotnet/packs/Microsoft.NETCore.App.Host.osx-arm64/10.0.0/runtimes/osx-arm64/native"
+local DotNETDir = "C:/Program Files/dotnet/packs/Microsoft.NETCore.App.Host.win-x64/10.0.0/runtimes/win-x64/native"
+
+if is_plat("macosx") then
+    DotNETDir = "/usr/local/share/dotnet/packs/Microsoft.NETCore.App.Host.osx-arm64/10.0.0/runtimes/osx-arm64/native"
+end 
+
 
 add_rules("mode.debug", "mode.release")
 
