@@ -47,11 +47,8 @@ int main()
 		MonoMethod* MsgMethod = mono_class_get_method_from_name(ManagedClass, "PrintMessage", 1);
 		// 准备参数
 		const char *inputStr = "Hello from C++";
-		// 创建 MonoString 对象
-		MonoString *monoStr = mono_string_new(domain, inputStr);
-		// 创建参数数组
 		void *args[1];
-		args[0] = monoStr;
+		args[0] = (char*)inputStr;
 		mono_runtime_invoke(MsgMethod, nullptr, args, nullptr);
 
 	}

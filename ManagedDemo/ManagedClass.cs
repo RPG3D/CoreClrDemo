@@ -10,9 +10,11 @@ namespace ManagedDemo
             System.Console.WriteLine("Managed: static ManagedClass()");       
         }
 
-        public static void PrintMessage(string InMsg)
+        [UnmanagedCallersOnly]
+        public static void PrintMessage(char* InMsg)
         {
-            System.Console.WriteLine("Managed: PrintMessage in C#, " + InMsg);
+            string message = Marshal.PtrToStringAnsi((IntPtr)InMsg);
+            System.Console.WriteLine("Managed: PrintMessage in C#, " + message);
         }
 
         public static int Add(int a, int b)

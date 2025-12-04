@@ -13,6 +13,8 @@
 #include <windows.h>
 #endif
 
+void (*PrintMessage)(char* InMsg);
+
 int main(int argc, char** argv)
 {
     char_t hostfxrPath[1024];
@@ -92,10 +94,14 @@ int main(int argc, char** argv)
     const char_t* dotnet_type = L"ManagedDemo.ManagedClass, ManagedDemo";
     const char_t* methodName = L"PrintMessage";
 
-    void* Init = nullptr;
-    rc = load_assembly_and_get_function_pointer(assemblyPath, dotnet_type, methodName, UNMANAGEDCALLERSONLY_METHOD, nullptr, &Init);
+    void* PrintMessageFuncPtr = nullptr;
+    rc = load_assembly_and_get_function_pointer(assemblyPath, dotnet_type, methodName, UNMANAGEDCALLERSONLY_METHOD, nullptr, &PrintMessageFuncPtr);
     
-    assert(Init != nullptr && "Failure: load_assembly_and_get_function_pointer()");
+    assert(PrintMessageFuncPtr != nullptr && "Failure: load_assembly_and_get_function_pointer()");
+
+    PrintMessage = (void (*)(char *))PrintMessageFuncPtr;
+    const char* msg = "Hello from native C++";
+    PrintMessage((char*)msg);
 
     return 0;
 }
