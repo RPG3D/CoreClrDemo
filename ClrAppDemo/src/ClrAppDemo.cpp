@@ -63,12 +63,12 @@ int main(int argc, char** argv)
     }
 
 #if __APPLE__
-	const char_t* assemblyPath = "../ManagedDemo/bin/Debug/net9.0/ManagedDemo.dll";
+	const char_t* assemblyPath = "../ManagedDemo/bin/Debug/net10.0/ManagedDemo.dll";
     const char_t* config_path = "./DotNetRuntime/dotnet.runtimeconfig.json";
 #endif
 
 #if _WIN32
-	const char_t* assemblyPath = L"../ManagedDemo/bin/Debug/net9.0/ManagedDemo.dll";
+	const char_t* assemblyPath = L"../ManagedDemo/bin/Debug/net10.0/ManagedDemo.dll";
     const char_t* config_path = L"./DotNetRuntime/dotnet.runtimeconfig.json";
 #endif
 
