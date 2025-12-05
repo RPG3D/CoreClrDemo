@@ -1,7 +1,7 @@
 
-#include <nethost.h>
-#include <coreclr_delegates.h>
-#include <hostfxr.h>
+#include "nethost.h"
+#include "coreclr_delegates.h"
+#include "hostfxr.h"
 #include <iostream>
 #include <assert.h>
 
@@ -62,16 +62,15 @@ int main(int argc, char** argv)
         std::cout<<"failed init hostfxr3\n";
     }
 
-	const char_t* assemblyPath = L"/Users/admin/Documents/Code/CoreClrDemo/ManagedDemo/bin/Debug/net10.0/ManagedDemo.dll";
-#if _WIN32
-	assemblyPath = L"E:/Code/CoreClrDemo/ManagedDemo/bin/Debug/net10.0/ManagedDemo.dll";
+#if __APPLE__
+	const char_t* assemblyPath = "../ManagedDemo/bin/Debug/net9.0/ManagedDemo.dll";
+    const char_t* config_path = "./DotNetRuntime/dotnet.runtimeconfig.json";
 #endif
 
-    const char_t* config_path = L"./DotNetRuntime/dotnet.runtimeconfig.json";
-
 #if _WIN32
-    config_path = L"E:/Code/CoreClrDemo/ClrAppDemo/DotNetRuntime/dotnet.runtimeconfig.json";
-#endif 
+	const char_t* assemblyPath = L"../ManagedDemo/bin/Debug/net9.0/ManagedDemo.dll";
+    const char_t* config_path = L"./DotNetRuntime/dotnet.runtimeconfig.json";
+#endif
 
     load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer = nullptr;
     hostfxr_handle handle = nullptr;
@@ -90,9 +89,15 @@ int main(int argc, char** argv)
     assert(rc == 0 && load_assembly_and_get_function_pointer != nullptr && "Get delegate failed");
     close_fptr(handle);
 
+#if __APPLE__
+    const char_t* dotnet_type = "ManagedDemo.ManagedClass, ManagedDemo";
+    const char_t* methodName = "PrintMessage";
+#endif
 
+#if _WIN32
     const char_t* dotnet_type = L"ManagedDemo.ManagedClass, ManagedDemo";
     const char_t* methodName = L"PrintMessage";
+#endif
 
     void* PrintMessageFuncPtr = nullptr;
     rc = load_assembly_and_get_function_pointer(assemblyPath, dotnet_type, methodName, UNMANAGEDCALLERSONLY_METHOD, nullptr, &PrintMessageFuncPtr);
