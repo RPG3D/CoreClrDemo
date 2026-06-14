@@ -17,24 +17,20 @@ void (*PrintMessage)(char* InMsg);
 
 int main(int argc, char** argv)
 {
-    char_t hostfxrPath[1024];
-    size_t hostfxrPathSize = sizeof(hostfxrPath) / sizeof(char_t);
-    int rc = get_hostfxr_path(hostfxrPath, &hostfxrPathSize, nullptr);
-    if (rc != 0)
-    {
-        std::cout<<"failed init hostfxr\n";
-        return -1;
-    }
-    else
-    {
-        std::cout<<"hostfxr path:"<<hostfxrPath<<"\n";
-    }
+    // Self-contained flat layout: load hostfxr.dll directly from app dir
+    const char_t* hostfxrPath = L"./hostfxr.dll";
+    std::cout << "Loading hostfxr from: " << hostfxrPath << "\n";
+    int rc = 0;
 
     void* libHostFxr = nullptr;
     hostfxr_initialize_for_runtime_config_fn init_config_fptr = nullptr;
     hostfxr_initialize_for_dotnet_command_line_fn init_cmd_fptr = nullptr;
     hostfxr_get_runtime_delegate_fn get_delegate_fptr = nullptr;
     hostfxr_close_fn close_fptr = nullptr;
+
+    // Error writer to capture full hostfxr error messages
+    static auto error_writer = [](const char_t* msg) { std::wcerr << L"[hostfxr] " << msg << std::endl; };
+    hostfxr_set_error_writer_fn set_error_writer_fptr = nullptr;
 
 #if __APPLE__
     libHostFxr = dlopen(hostfxrPath, RTLD_LAZY);
@@ -51,7 +47,12 @@ int main(int argc, char** argv)
     init_cmd_fptr = (hostfxr_initialize_for_dotnet_command_line_fn)GetProcAddress(hModule, "hostfxr_initialize_for_dotnet_command_line");
     get_delegate_fptr = (hostfxr_get_runtime_delegate_fn)GetProcAddress(hModule, "hostfxr_get_runtime_delegate");
     close_fptr = (hostfxr_close_fn)GetProcAddress(hModule, "hostfxr_close");
+    set_error_writer_fptr = (hostfxr_set_error_writer_fn)GetProcAddress(hModule, "hostfxr_set_error_writer");
 #endif
+
+    // Capture full error messages from hostfxr
+    if (set_error_writer_fptr)
+        set_error_writer_fptr(error_writer);
 
     if(init_config_fptr && init_cmd_fptr && get_delegate_fptr && close_fptr)
     {
@@ -62,20 +63,26 @@ int main(int argc, char** argv)
         std::cout<<"failed init hostfxr3\n";
     }
 
+	// Self-contained via RuntimeConfig (UnrealSharp packaged mode pattern).
 #if __APPLE__
-	const char_t* assemblyPath = "../ManagedDemo/bin/Debug/net10.0/ManagedDemo.dll";
-    const char_t* config_path = "./DotNetRuntime/dotnet.runtimeconfig.json";
+    const char_t* assemblyPath = "./ManagedDemo.dll";
+    const char_t* configPath = "./ManagedDemo.runtimeconfig.json";
+    const char_t* dotnetRoot = ".";
 #endif
 
 #if _WIN32
-	const char_t* assemblyPath = L"../ManagedDemo/bin/Debug/net10.0/ManagedDemo.dll";
-    const char_t* config_path = L"./DotNetRuntime/dotnet.runtimeconfig.json";
+    const char_t* assemblyPath = L"./ManagedDemo.dll";
+    const char_t* configPath = L"./ManagedDemo.runtimeconfig.json";
 #endif
 
-    load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer = nullptr;
-    hostfxr_handle handle = nullptr;
+    hostfxr_initialize_parameters initParams;
+    initParams.size = sizeof(hostfxr_initialize_parameters);
+    initParams.host_path = assemblyPath;
+    initParams.dotnet_root = L"E:/Code/CoreClrDemo/ClrAppDemo/DotNetRuntime";
 
-    rc = init_config_fptr(config_path, nullptr, &handle);
+    hostfxr_handle handle = nullptr;
+    const char_t* cmdArgs[] = { assemblyPath };
+    rc = init_cmd_fptr(1, cmdArgs, &initParams, &handle);
     if (rc != 0 || handle == nullptr)
     {
         std::cerr << "Init failed: " << std::hex << std::showbase << rc << std::endl;
@@ -83,9 +90,9 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    // Get the load assembly function pointer
+    // Get the load assembly function pointer via runtime delegate
+    load_assembly_and_get_function_pointer_fn load_assembly_and_get_function_pointer = nullptr;
     rc = get_delegate_fptr(handle, hdt_load_assembly_and_get_function_pointer, (void**)&load_assembly_and_get_function_pointer);
-
     assert(rc == 0 && load_assembly_and_get_function_pointer != nullptr && "Get delegate failed");
     close_fptr(handle);
 
