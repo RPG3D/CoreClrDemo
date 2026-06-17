@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<manifest xmlns:a="http://schemas.android.com/apk/res/android"
+          a:versionCode="1"
+          a:versionName="1.0">
+
+  <uses-sdk a:minSdkVersion="21" />
+  <uses-permission a:name="android.permission.INTERNET"/>
+
+  <application a:label="AndroidClrDemo"
+               a:largeHeap="true">
+
+    <activity a:name="net.dot.clrdemo.MainActivity"
+              a:exported="true">
+      <intent-filter>
+        <category a:name="android.intent.category.LAUNCHER"/>
+        <action a:name="android.intent.action.MAIN"/>
+      </intent-filter>
+    </activity>
+
+  </application>
+</manifest>

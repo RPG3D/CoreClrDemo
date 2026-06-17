@@ -46,4 +46,14 @@
 /ClrAppDemo/build/**
 /ClrAppDemo/MonoAppDemo.xcodeproj/**
 /ClrAppDemo/vsxmake2026/**
+/AndroidClrDemo/publish/**
+/AndroidClrDemo/build/**
+/AndroidClrDemo/obj/**
+/AndroidClrDemo/app/build/**
+/AndroidClrDemo/app/.cxx/**
+/AndroidClrDemo/app/src/main/jniLibs/**
+/AndroidClrDemo/app/src/main/assets/**
+/AndroidClrDemo/.gradle/**
+/AndroidClrDemo/debug.keystore
+/AndroidClrDemo/local.properties
 
